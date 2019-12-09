@@ -1,0 +1,22 @@
+{
+  "name": "advent-of-code-2019",
+  "version": "1.0.0",
+  "description": "",
+  "main": "day5.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arnaud9145/advent-of-code-2019.git"
+  },
+  "author": "arnaud9145",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arnaud9145/advent-of-code-2019/issues"
+  },
+  "homepage": "https://github.com/arnaud9145/advent-of-code-2019#readme",
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}
