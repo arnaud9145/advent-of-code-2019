@@ -1,6 +1,8 @@
+const fs = require('fs')
+
 let input = '03036732577212944063491565474664'
 
-let columns = input.split('')
+let columns = []
 console.log('start building input')
 
 for (let i = 0; i < 10000; i++) {
@@ -24,27 +26,32 @@ const contructPattern = (length, phase = 1, basepattern) => {
   tab.shift()
   return tab
 }
-
+console.log('constructing pattern')
+for (let step = 1; step <= columns.length; step++) {
+  const data = contructPattern(columns.length, step, [0, 1, 0, -1])
+  fs.appendFile('patterns/pattern_' + step + '.txt', data.join(','), err => {
+    if (err) console.log(err)
+  })
+}
+console.log('finished constructing pattern')
+/*
 const phase = input => {
-  let tab = []
   let output = []
-  let patternSum = 0
   for (let step = 0; step < input.length; step++) {
-    tab = contructPattern(input.length, step + 1, [0, 1, 0, -1])
     let result = 0
-    patternSum = 0
-    for (let i = 0; i < tab.length; i++) {
-      result += tab[i] * input[i]
-      patternSum += Math.abs(tab[i])
+    for (let i = 0; i < input.length; i++) {
+      result += tab[step][i] * input[i]
     }
     result = Math.abs(result) % 10
     output.push(result)
+    console.log(output.length)
   }
   return output
 }
 
 const fft = (input, numberOfPhases) => {
   for (let i = 0; i < numberOfPhases; i++) {
+    console.log('phase', i)
     input = phase(input)
   }
   return input
@@ -55,5 +62,6 @@ const result = fft(columns, 100)
 console.log('End FFT')
 
 const whereToSearch = parseInt(result.slice(0, 7).join(''))
-
+console.log('result :')
 console.log(result.slice(whereToSearch, whereToSearch + 8).join(''))
+*/
