@@ -36,8 +36,13 @@ let found_key = []
 
 //while (found_key.length < key_count) {}
 
-const findAllPaths = (map, x, y) => {
+const findAllPaths = (map, initialPos) => {
+  let position = initialPos
   let paths = []
+  if (isAvaillablePlace(map[position[0] + 1][position[1]]))
+    paths.push([position[0] + 1, position[1]])
+    if (isAvaillablePlace(map[position[0]][position[1] + 1]))
+      paths.push([position[0] + 1, position[1]])
 }
 
 const isAvaillablePlace = tile => {

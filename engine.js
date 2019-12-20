@@ -1,12 +1,18 @@
-module.exports = (inputs, inputFonction) => {
-  let instructions = inputs.split(',')
+module.exports = (
+  instructions,
+  inputFonction,
+  initialPosition = 0,
+  returnWhenOutput = false
+) => {
   instructions = instructions.map(instruction => parseInt(instruction))
 
   let condition = true
-  let i = 0
+  let i = initialPosition
   let a_position, b_position, result_position, a_value, b_value
   let last_output = null
+  let outputs = []
   while (condition) {
+    //console.log(instructions.join(','))
     let first_instruction = `${instructions[i]}`
     if (first_instruction.length < 2)
       first_instruction = `0${first_instruction}`
@@ -72,6 +78,7 @@ module.exports = (inputs, inputFonction) => {
       case 3:
         a_position = instructions[i + 1]
         const input = inputFonction()
+        console.log('input', input)
         instructions[a_position] = input
 
         i += 1
@@ -79,7 +86,10 @@ module.exports = (inputs, inputFonction) => {
       case 4:
         a_position = instructions[i + 1]
         const output = c_mode === 0 ? instructions[a_position] : a_position
-        last_output = output
+        console.log('output', output, i)
+
+        outputs.push(output)
+        if (returnWhenOutput) return { outputs, instructions, cursor: i + 2 }
         i += 1
         break
       case 5:
@@ -141,5 +151,5 @@ module.exports = (inputs, inputFonction) => {
     i++
     if (i > 100000) condition = false
   }
-  return last_output
+  return { outputs, instructions }
 }
