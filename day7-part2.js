@@ -1,8 +1,8 @@
 console.log('start')
+const fs = require('fs')
 const engine = require('./engine')
 
-let instructions = process.argv.slice(2)[1].split(',')
-
+let instructions = fs.readFileSync('./inputs/day7.txt', 'utf8').split(',')
 class Amplifer {
   constructor(phase) {
     this.phase = phase
@@ -29,29 +29,53 @@ class Amplifer {
   }
 }
 
-let it = 0
-const A = new Amplifer(9)
-const B = new Amplifer(7)
-const C = new Amplifer(8)
-const D = new Amplifer(5)
-const E = new Amplifer(6)
-let output = 0
-while (it < 1000) {
-  it++
-  console.log('A')
-  // console.log(A.instructions.join(','))
-  output = A.compute(output)
-  // console.log(A.instructions.join(','))
-  console.log('B')
-  output = B.compute(output)
-  console.log('C')
-  output = C.compute(output)
-  console.log('D')
-  output = D.compute(output)
-  console.log('E')
-  output = E.compute(output)
-  if (!output) {
-    break
+const getOutputForGivenPhases = phases => {
+  let it = 0
+  const A = new Amplifer(phases[0])
+  const B = new Amplifer(phases[1])
+  const C = new Amplifer(phases[2])
+  const D = new Amplifer(phases[3])
+  const E = new Amplifer(phases[4])
+  let output = 0
+  let last_output = 0
+  while (it < 10000) {
+    it++
+    output = A.compute(output)
+    output = B.compute(output)
+    output = C.compute(output)
+    output = D.compute(output)
+    output = E.compute(output)
+    if (output === undefined) {
+      return last_output
+    }
+    last_output = output
   }
-  console.log(output)
 }
+
+const lower = 5
+const upper = 10
+
+let output_max = 0
+let best_phase = []
+for (let i = lower; i < upper; i++) {
+  for (let j = lower; j < upper; j++) {
+    if (j === i) continue
+    for (let k = lower; k < upper; k++) {
+      if (k === i || k === j) continue
+      for (let l = lower; l < upper; l++) {
+        if (l === i || l === j || l === k) continue
+        for (let m = lower; m < upper; m++) {
+          if (m === i || m === j || m === k || m === l) continue
+          const phase = [i, j, k, l, m]
+          console.log(phase)
+          const output = getOutputForGivenPhases(phase)
+          if (output > output_max) {
+            output_max = output
+            best_phase = phase
+          }
+        }
+      }
+    }
+  }
+}
+console.log('best :', output_max, best_phase)

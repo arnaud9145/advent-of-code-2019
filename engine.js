@@ -12,7 +12,6 @@ module.exports = (
   let last_output = null
   let outputs = []
   while (condition) {
-    //console.log(instructions.join(','))
     let first_instruction = `${instructions[i]}`
     if (first_instruction.length < 2)
       first_instruction = `0${first_instruction}`
@@ -41,15 +40,15 @@ module.exports = (
         b_value = parseInt(b_value)
 
         instructions[result_position] = a_value + b_value
-        /* console.log(
-        a_value +
-          ' + ' +
-          b_value +
-          ' = ' +
-          instructions[result_position] +
-          ', setting result at position :' +
-          result_position
-      )*/
+        console.log(
+          a_value +
+            ' + ' +
+            b_value +
+            ' = ' +
+            instructions[result_position] +
+            ', setting result at position : ' +
+            result_position
+        )
 
         i += 3
         break
@@ -64,15 +63,15 @@ module.exports = (
         b_value = parseInt(b_value)
 
         instructions[result_position] = a_value * b_value
-        /*  console.log(
-        a_value +
-          ' * ' +
-          b_value +
-          ' = ' +
-          instructions[result_position] +
-          ', setting result at position :' +
-          result_position
-      )*/
+        console.log(
+          a_value +
+            ' * ' +
+            b_value +
+            ' = ' +
+            instructions[result_position] +
+            ', setting result at position : ' +
+            result_position
+        )
         i += 3
         break
       case 3:
@@ -93,6 +92,7 @@ module.exports = (
         i += 1
         break
       case 5:
+        console.log('jump-if-true')
         a_position = instructions[i + 1]
         b_position = instructions[i + 2]
 
@@ -104,6 +104,7 @@ module.exports = (
         else i += 2
         break
       case 6:
+        console.log('jump-if-false')
         a_position = instructions[i + 1]
         b_position = instructions[i + 2]
 
@@ -115,6 +116,7 @@ module.exports = (
         else i += 2
         break
       case 7:
+        console.log('jump-if-less')
         a_position = instructions[i + 1]
         b_position = instructions[i + 2]
         result_position = instructions[i + 3]
@@ -128,6 +130,7 @@ module.exports = (
         i += 3
         break
       case 8:
+        console.log('jump-if-equals')
         a_position = instructions[i + 1]
         b_position = instructions[i + 2]
         result_position = instructions[i + 3]
@@ -141,6 +144,7 @@ module.exports = (
         i += 3
         break
       case 99:
+        console.log('end')
         condition = false
         break
       default:
