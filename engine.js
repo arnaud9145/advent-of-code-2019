@@ -183,5 +183,5 @@ module.exports = (
     i++
     if (i > 100000) condition = false
   }
-  return { outputs, instructions }
+  return { outputs, instructions, end: true }
 }
