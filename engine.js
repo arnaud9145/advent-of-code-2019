@@ -2,17 +2,38 @@ module.exports = (
   instructions,
   inputFonction,
   initialPosition = 0,
-  returnWhenOutput = false
+  returnWhenOutput = false,
+  verbose = false
 ) => {
   instructions = instructions.map(instruction => parseInt(instruction))
 
+  instructions = [...instructions, ...new Array(1000).fill(0)]
   let condition = true
   let i = initialPosition
   let a_position, b_position, result_position, a_value, b_value
-  let last_output = null
+  let relative_base = 0
+
+  const getValue = (mode, position) => {
+    switch (mode) {
+      case 0:
+        return parseInt(instructions[position])
+      case 1:
+        return parseInt(position)
+      case 2:
+        return parseInt(instructions[position + relative_base])
+      default:
+        return null
+    }
+  }
+
+  const debug = log => {
+    if (verbose) console.log(log)
+  }
+
   let outputs = []
   while (condition) {
     let first_instruction = `${instructions[i]}`
+    debug('opcode : ' + first_instruction)
     if (first_instruction.length < 2)
       first_instruction = `0${first_instruction}`
     const opcode =
@@ -34,13 +55,13 @@ module.exports = (
         b_position = instructions[i + 2]
         result_position = instructions[i + 3]
 
-        a_value = c_mode === 0 ? instructions[a_position] : a_position
-        b_value = b_mode === 0 ? instructions[b_position] : b_position
-        a_value = parseInt(a_value)
-        b_value = parseInt(b_value)
+        if (a_mode === 2) result_position += relative_base
+
+        a_value = getValue(c_mode, a_position)
+        b_value = getValue(b_mode, b_position)
 
         instructions[result_position] = a_value + b_value
-        console.log(
+        debug(
           a_value +
             ' + ' +
             b_value +
@@ -57,13 +78,13 @@ module.exports = (
         b_position = instructions[i + 2]
         result_position = instructions[i + 3]
 
-        a_value = c_mode === 0 ? instructions[a_position] : a_position
-        b_value = b_mode === 0 ? instructions[b_position] : b_position
-        a_value = parseInt(a_value)
-        b_value = parseInt(b_value)
+        if (a_mode === 2) result_position += relative_base
+
+        a_value = getValue(c_mode, a_position)
+        b_value = getValue(b_mode, b_position)
 
         instructions[result_position] = a_value * b_value
-        console.log(
+        debug(
           a_value +
             ' * ' +
             b_value +
@@ -76,79 +97,86 @@ module.exports = (
         break
       case 3:
         a_position = instructions[i + 1]
+        if (c_mode === 2) a_position += relative_base
         const input = inputFonction()
-        console.log('input', input)
-        instructions[a_position] = input
+        debug('input ' + input)
+        instructions[a_position] = parseInt(input)
 
         i += 1
         break
       case 4:
         a_position = instructions[i + 1]
-        const output = c_mode === 0 ? instructions[a_position] : a_position
-        console.log('output', output, i)
+        const output = getValue(c_mode, a_position)
+        debug('output ' + output)
 
         outputs.push(output)
         if (returnWhenOutput) return { outputs, instructions, cursor: i + 2 }
         i += 1
         break
       case 5:
-        console.log('jump-if-true')
+        debug('jump-if-true')
         a_position = instructions[i + 1]
         b_position = instructions[i + 2]
 
-        a_value = c_mode === 0 ? instructions[a_position] : a_position
-        b_value = b_mode === 0 ? instructions[b_position] : b_position
-        a_value = parseInt(a_value)
-        b_value = parseInt(b_value)
+        a_value = getValue(c_mode, a_position)
+        b_value = getValue(b_mode, b_position)
+
         if (a_value !== 0) i = b_value - 1
         else i += 2
         break
       case 6:
-        console.log('jump-if-false')
+        debug('jump-if-false')
         a_position = instructions[i + 1]
         b_position = instructions[i + 2]
 
-        a_value = c_mode === 0 ? instructions[a_position] : a_position
-        b_value = b_mode === 0 ? instructions[b_position] : b_position
-        a_value = parseInt(a_value)
-        b_value = parseInt(b_value)
+        a_value = getValue(c_mode, a_position)
+        b_value = getValue(b_mode, b_position)
+
         if (a_value === 0) i = b_value - 1
         else i += 2
         break
       case 7:
-        console.log('jump-if-less')
+        debug('jump-if-less')
         a_position = instructions[i + 1]
         b_position = instructions[i + 2]
         result_position = instructions[i + 3]
 
-        a_value = c_mode === 0 ? instructions[a_position] : a_position
-        b_value = b_mode === 0 ? instructions[b_position] : b_position
-        a_value = parseInt(a_value)
-        b_value = parseInt(b_value)
+        if (a_mode === 2) result_position += relative_base
+
+        a_value = getValue(c_mode, a_position)
+        b_value = getValue(b_mode, b_position)
 
         instructions[result_position] = a_value < b_value ? 1 : 0
         i += 3
         break
       case 8:
-        console.log('jump-if-equals')
+        debug('jump-if-equals')
         a_position = instructions[i + 1]
         b_position = instructions[i + 2]
         result_position = instructions[i + 3]
 
-        a_value = c_mode === 0 ? instructions[a_position] : a_position
-        b_value = b_mode === 0 ? instructions[b_position] : b_position
-        a_value = parseInt(a_value)
-        b_value = parseInt(b_value)
+        if (a_mode === 2) result_position += relative_base
+
+        a_value = getValue(c_mode, a_position)
+        b_value = getValue(b_mode, b_position)
 
         instructions[result_position] = a_value === b_value ? 1 : 0
         i += 3
         break
+      case 9: // adjust the relative base
+        debug('adjust-relative-base')
+        a_position = instructions[i + 1]
+        a_value = getValue(c_mode, a_position)
+        relative_base += parseInt(a_value)
+
+        i += 1
+        break
       case 99:
-        console.log('end')
+        debug('end')
         condition = false
         break
       default:
-        console.log('UNKNOWN CODE :', instructions[i])
+        console.error('UNKNOWN CODE :', instructions[i])
         condition = false
         break
     }
