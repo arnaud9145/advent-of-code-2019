@@ -2,7 +2,7 @@ console.log('start')
 const fs = require('fs')
 const engine = require('./engine')
 let map = {}
-const tiles = [' ', '■', '□', '■', 'o']
+const tiles = [' ', '■', '🎁', '🏓', '🏐']
 const readlineSync = require('readline-sync')
 
 const printMap = map => {
@@ -41,15 +41,23 @@ class Arcade {
     this.score = 0
     this.input = null
     this.outputs = []
+    this.ballXPosition = 0
+    this.paddleXPosition = 0
+    this.steps = 0
   }
   step() {
+    this.steps++
     let { value, done } = this.robot.next(this.input)
     this.input = null
-    if (done) return true
     if (value.type === 'INPUT') {
       console.log(printMap(map))
       console.log(this.score)
-      this.input = readlineSync.question('Input ? ')
+      this.input =
+        this.ballXPosition === this.paddleXPosition
+          ? 0
+          : this.paddleXPosition > this.ballXPosition
+          ? -1
+          : 1
     }
 
     if (value.type === 'OUTPUT') {
@@ -64,13 +72,21 @@ class Arcade {
         this.outputs = []
       }
     }
+    if (done) return true
+
     return false
   }
   updateMap(position, tile) {
     map[position.join(':')] = tile
+    if (tile === 4) this.ballXPosition = position[0]
+    if (tile === 3) this.paddleXPosition = position[0]
   }
   updateScore(score) {
     this.score = score
+  }
+  printFinalScore() {
+    console.log(printMap(map))
+    console.log(this.score)
   }
 }
 
@@ -84,3 +100,4 @@ let ended = false
 while (!ended) {
   ended = arcade.step()
 }
+arcade.printFinalScore()
