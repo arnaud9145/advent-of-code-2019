@@ -62,10 +62,12 @@ module.exports = instructions => {
           setValue(instructions[++i], a * b, modes[0])
           break
         case CODES.INPUT:
+         // console.log('INPUT')
           setValue(instructions[++i], yield { type: 'INPUT' }, modes[2])
           break
         case CODES.OUTPUT: {
           lastOutput = getValue(instructions[++i], modes[2])
+         // console.log('OUTPUT', lastOutput)
           yield { type: 'OUTPUT', output: lastOutput }
           break
         }
