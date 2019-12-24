@@ -45,7 +45,7 @@ class Robot {
     this.position = [0, 0]
     this.facing = directions.UP
     this.robot = engine(program)()
-    map[this.position.join(':')] = 0
+    map[this.position.join(':')] = 1
     this.robot.next()
   }
   move() {
@@ -87,4 +87,3 @@ while (!ended) {
   ended = robot.move()
 }
 console.log(printMap(map))
-  console.log(Object.keys(map).length)
