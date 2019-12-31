@@ -76,7 +76,6 @@ console.log('START')
 console.log('__________________')
 let overflowedMaterials = []
 const findOREAmountForXOutput = (product, amount) => {
-
   const reaction = reactions.find(r => r.output.name === product)
   //find if already have element
   const spare = overflowedMaterials.find(material => material.name === product)
@@ -105,8 +104,14 @@ const findOREAmountForXOutput = (product, amount) => {
   })
   return ore
 }
+let i = 3060115 
+console.log(i)
+let result = findOREAmountForXOutput('FUEL', ++i)
 
-const result = findOREAmountForXOutput('FUEL', 1)
+//console.log('overflowedmaterials :', overflowedMaterials)
 
-console.log('result :', result)
-console.log('overflowedmaterials :', overflowedMaterials)
+while (result < 1000000000000) {
+  overflowedMaterials = []
+  result = findOREAmountForXOutput('FUEL', ++i)
+}
+console.log('result :', result, i - 1)
